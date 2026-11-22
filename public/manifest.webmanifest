@@ -1,0 +1,17 @@
+{
+  "name": "এসপি ওয়েদার — বাংলাদেশের আবহাওয়া, সংবাদ ও সতর্কবার্তা",
+  "short_name": "এসপি ওয়েদার",
+  "description": "বাংলাদেশের ৬৪ জেলার আবহাওয়া, ঘণ্টাভিত্তিক ও ১৬ দিনের পূর্বাভাস, আবহাওয়া সংবাদ ও সরকারি সতর্কবার্তা।",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3F7FC",
+  "theme_color": "#2676E8",
+  "lang": "bn",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
