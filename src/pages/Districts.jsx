@@ -17,6 +17,7 @@ export default function Districts() {
   const [q, setQ] = useState('');
   const [temps, setTemps] = useState({});
   const [loadingIds, setLoadingIds] = useState(new Set());
+  const [doneIds, setDoneIds] = useState(new Set());
 
   const filtered = useMemo(() => {
     return districts.filter((d) => {
@@ -53,6 +54,7 @@ export default function Districts() {
           });
           return next;
         });
+        setDoneIds((prev) => new Set([...prev, ...chunk.map((d) => d.id)]));
         setLoadingIds(new Set());
       }
     };
@@ -92,11 +94,32 @@ export default function Districts() {
             {filtered.map((d) => {
               const t = temps[d.id];
               const busy = loadingIds.has(d.id);
+              const done = doneIds.has(d.id);
+              const retry = async (e) => {
+                e.preventDefault();
+                setLoadingIds(new Set([d.id]));
+                try {
+                  const r = await fetchCurrentOnly(d);
+                  if (r?.current) {
+                    setTemps((prev) => ({
+                      ...prev,
+                      [d.id]: {
+                        temp: r.current.temperature_2m,
+                        code: r.current.weather_code,
+                        max: r.daily?.temperature_2m_max?.[0],
+                        min: r.daily?.temperature_2m_min?.[0],
+                        rain: r.daily?.precipitation_probability_max?.[0],
+                      },
+                    }));
+                  }
+                } catch { /* stays in failed state */ }
+                setLoadingIds(new Set());
+              };
               return (
                 <Link key={d.id} to={`/jela/${d.id}`} className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-100 transition hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-800 dark:ring-slate-700">
                   <p className="flex items-center gap-1.5 font-bold text-ink dark:text-white"><MapPin size={15} className="shrink-0 text-primary" /> {d.nameBn}</p>
                   <p className="mt-0.5 text-xs text-muted dark:text-slate-400">{d.divisionBn} বিভাগ</p>
-                  {busy && !t ? (
+                  {(busy || !done) && !t ? (
                     <Skeleton className="mt-3 h-14 w-full" />
                   ) : t ? (
                     <div className="mt-3 flex items-center justify-between gap-2">
@@ -109,7 +132,10 @@ export default function Districts() {
                       <WeatherIcon code={t.code} size={40} className="shrink-0 text-primary" />
                     </div>
                   ) : (
-                    <p className="mt-3 text-sm text-muted dark:text-slate-400">তাপমাত্রা আনা যায়নি — বিস্তারিত দেখতে ক্লিক করুন।</p>
+                    <div className="mt-3">
+                      <p className="text-sm text-muted dark:text-slate-400">তাপমাত্রা আনা যায়নি — বিস্তারিত দেখতে ক্লিক করুন।</p>
+                      <button type="button" onClick={retry} className="mt-2 min-h-[36px] rounded-full bg-sky-50 px-3 py-1.5 text-xs font-bold text-primary ring-1 ring-sky-200 hover:bg-sky-100 focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-sky-300 dark:ring-slate-600">আবার চেষ্টা করুন</button>
+                    </div>
                   )}
                 </Link>
               );
