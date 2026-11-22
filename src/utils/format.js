@@ -55,10 +55,16 @@ export function formatTimeBn(dateInput) {
   return `${ampm} ${toBn(h12)}:${toBn(m.padStart(2, '0'))}`;
 }
 export function formatTime24Bn(isoTime) {
-  // isoTime like "2026-11-22T14:00" (Asia/Dhaka local) or "06:00"
+  // isoTime like "2026-11-22T06:17" — already Asia/Dhaka wall-clock time from Open-Meteo.
+  // Format directly from the hour/minute; never via `new Date`, which would shift
+  // the time by the viewer's own timezone.
   const t = String(isoTime).includes('T') ? String(isoTime).split('T')[1] : String(isoTime);
-  const [h, m] = t.split(':');
-  return formatTimeBn(new Date(2026, 0, 1, Number(h), Number(m)));
+  const [hStr, mStr] = t.split(':');
+  const h = Number(hStr);
+  const m = String(mStr || '00').padStart(2, '0');
+  const ampm = h < 12 ? 'সকাল' : h < 17 ? 'দুপুর' : h < 20 ? 'বিকেল' : 'রাত';
+  let h12 = h % 12; if (h12 === 0) h12 = 12;
+  return `${ampm} ${toBn(h12)}:${toBn(m)}`;
 }
 export function hourLabelBn(isoTime) {
   const t = String(isoTime).includes('T') ? String(isoTime).split('T')[1] : String(isoTime);
