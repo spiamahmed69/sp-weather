@@ -50,7 +50,7 @@ export function formatTimeBn(dateInput) {
   const { parts } = dhakaParts(dateInput);
   let h = Number(parts.hour);
   const m = parts.minute;
-  const ampm = h < 12 ? 'সকাল' : h < 17 ? 'দুপুর' : h < 20 ? 'বিকেল' : 'রাত';
+  const ampm = h < 5 ? 'রাত' : h < 12 ? 'সকাল' : h < 17 ? 'দুপুর' : h < 20 ? 'বিকেল' : 'রাত';
   let h12 = h % 12; if (h12 === 0) h12 = 12;
   return `${ampm} ${toBn(h12)}:${toBn(m.padStart(2, '0'))}`;
 }
@@ -62,14 +62,14 @@ export function formatTime24Bn(isoTime) {
   const [hStr, mStr] = t.split(':');
   const h = Number(hStr);
   const m = String(mStr || '00').padStart(2, '0');
-  const ampm = h < 12 ? 'সকাল' : h < 17 ? 'দুপুর' : h < 20 ? 'বিকেল' : 'রাত';
+  const ampm = h < 5 ? 'রাত' : h < 12 ? 'সকাল' : h < 17 ? 'দুপুর' : h < 20 ? 'বিকেল' : 'রাত';
   let h12 = h % 12; if (h12 === 0) h12 = 12;
   return `${ampm} ${toBn(h12)}:${toBn(m)}`;
 }
 export function hourLabelBn(isoTime) {
   const t = String(isoTime).includes('T') ? String(isoTime).split('T')[1] : String(isoTime);
   const h = Number(t.split(':')[0]);
-  const ampm = h < 12 ? 'সকাল' : h < 17 ? 'দুপুর' : h < 20 ? 'বিকেল' : 'রাত';
+  const ampm = h < 5 ? 'রাত' : h < 12 ? 'সকাল' : h < 17 ? 'দুপুর' : h < 20 ? 'বিকেল' : 'রাত';
   let h12 = h % 12; if (h12 === 0) h12 = 12;
   return `${ampm} ${toBn(h12)}টা`;
 }
